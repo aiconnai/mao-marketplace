@@ -39,30 +39,31 @@ This automatically uses Opus for planning and Sonnet for execution.
 
 ## Usage
 
-### Automatic — Describe a Complex Task
+### Slash Commands (Recommended)
 
-MAO activates automatically for multi-file, multi-concern tasks:
+| Command | What It Does |
+|---------|-------------|
+| `/mao <task>` | Full orchestration — decompose, execute in parallel, verify, review, merge |
+| `/mao-plan <task>` | Decomposition only — create the task DAG without executing |
+| `/mao-status` | Check status of an in-progress or completed MAO run |
+
+Install globally by symlinking `commands/*.md` to `~/.claude/commands/`.
+
+### Automatic Activation
+
+MAO also activates automatically for multi-file, multi-concern tasks:
 
 ```
 > Implement JWT authentication with refresh token rotation, rate limiting,
   and brute-force protection for the API
 ```
 
-### Explicit — Invoke Agents Directly
+### Explicit Agent Invocation
 
 ```
 > Use the mao-architect to decompose: "Create a REST API endpoint
   for user registration with email validation and password hashing"
 ```
-
-### Available Agent Commands
-
-| Command | What It Does |
-|---------|-------------|
-| `Use the mao-architect to decompose: "..."` | Break a problem into a task DAG with complexity scores |
-| `Use the mao-orchestrator to execute the task graph` | Schedule and run tasks from an existing task-graph.json |
-| `Use the mao-reviewer to review the changes` | Cross-agent code review for security, performance, design |
-| `Use the mao-reflector to analyze the run` | Meta-analysis and pattern learning (for complex runs) |
 
 ### What Happens Under the Hood
 
@@ -89,6 +90,10 @@ multi-agent-orchestrator/
 │   ├── mao-reviewer.md         # Sonnet — code review
 │   ├── mao-reflector.md        # Opus — meta-analysis
 │   └── mao-explorer.md         # Sonnet — parallel solution search
+├── commands/                   # Claude Code slash commands
+│   ├── mao.md                  # /mao — full orchestration
+│   ├── mao-plan.md             # /mao-plan — decomposition only
+│   └── mao-status.md           # /mao-status — run status
 │
 └── skills/
     └── multi-agent-orchestrator/

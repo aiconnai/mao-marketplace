@@ -70,6 +70,37 @@ echo ".orchestrator/" >> .gitignore
 
 ## Quick Start
 
+### Slash Commands
+
+MAO provides three slash commands for Claude Code:
+
+| Command | What It Does |
+|---------|-------------|
+| `/mao <task>` | Full orchestration — decompose, execute in parallel, verify, review, merge |
+| `/mao-plan <task>` | Decomposition only — create the task DAG without executing |
+| `/mao-status` | Check status of an in-progress or completed MAO run |
+
+**Install commands globally** (symlink to `~/.claude/commands/`):
+
+```bash
+ln -s /path/to/mao-marketplace/plugins/multi-agent-orchestrator/commands/mao.md ~/.claude/commands/mao.md
+ln -s /path/to/mao-marketplace/plugins/multi-agent-orchestrator/commands/mao-plan.md ~/.claude/commands/mao-plan.md
+ln -s /path/to/mao-marketplace/plugins/multi-agent-orchestrator/commands/mao-status.md ~/.claude/commands/mao-status.md
+```
+
+**Examples:**
+
+```
+> /mao-plan Implement JWT auth with refresh tokens, rate limiting, and brute-force protection
+# → Creates task-graph.json with 5-8 tasks, shows DAG, waits for approval
+
+> /mao Implement JWT auth with refresh tokens, rate limiting, and brute-force protection
+# → Plans, confirms with you, then executes the full 7-phase workflow
+
+> /mao-status
+# → Shows task board, progress, failures, and metrics
+```
+
 ### Recommended Session Mode
 
 ```bash
@@ -79,34 +110,14 @@ claude --model opusplan
 This uses Opus for planning/reflection and Sonnet for execution — matching
 MAO's philosophy perfectly.
 
-### Automatic Activation
+### Agent Invocation (Alternative)
 
-Just describe a complex task. MAO activates automatically for multi-file/multi-concern work:
-
-```
-> Implement JWT authentication with refresh token rotation, rate limiting,
-  and brute-force protection for the API
-```
-
-### Explicit Invocation
-
-Invoke a specific agent directly:
+You can also invoke agents directly without slash commands:
 
 ```
 > Use the mao-architect to decompose: "Build a user registration
   system with email validation and password hashing"
 ```
-
-### Quick Test
-
-After installation, verify it works:
-
-```
-> Use the mao-architect to decompose: "Create a REST API endpoint
-  for user registration with email validation and password hashing"
-```
-
-You should see a `task-graph.json` with 4-6 tasks, most assigned to Haiku or Sonnet.
 
 ---
 
@@ -282,6 +293,10 @@ mao-marketplace/                          # Marketplace (distribution layer)
         │   ├── mao-reviewer.md
         │   ├── mao-reflector.md
         │   └── mao-explorer.md
+        ├── commands/                    # Claude Code slash commands
+        │   ├── mao.md                   # /mao — full orchestration
+        │   ├── mao-plan.md              # /mao-plan — decomposition only
+        │   └── mao-status.md            # /mao-status — run status
         │
         └── skills/
             └── multi-agent-orchestrator/ # Skill (what Claude Code loads)
