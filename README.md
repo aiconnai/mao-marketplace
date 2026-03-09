@@ -1,7 +1,13 @@
-# MAO Marketplace — Multi-Agent Orchestrator for Claude Code
+# MAO — Multi-Agent Orchestrator for Claude Code
+
+[![CI](https://github.com/aiconnai/mao-marketplace/actions/workflows/ci.yml/badge.svg)](https://github.com/aiconnai/mao-marketplace/actions/workflows/ci.yml)
+[![npm](https://img.shields.io/npm/v/mao-orchestrator)](https://www.npmjs.com/package/mao-orchestrator)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENSE)
 
 Orchestrate multi-agent workflows with intelligent **Opus/Sonnet/Haiku model tiering**,
 DAG-based task scheduling, git worktrees for parallelism, and self-correction loops.
+
+**Built for Claude Code.** MAO uses Claude-exclusive features (sub-agent spawning, model routing, slash commands) that don't exist in other AI coding agents.
 
 ## What It Does
 
@@ -27,42 +33,41 @@ Result: **60-70% cost reduction** vs all-Opus, with quality maintained through
 
 ## Installation
 
-### From GitHub (Recommended)
+### npx (Recommended)
 
 ```bash
-# 1. Add the marketplace
+# Install to current project
+npx mao-orchestrator init
+
+# Install globally (all Claude Code sessions)
+npx mao-orchestrator init --global
+```
+
+### curl | bash (No Node Required)
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/aiconnai/mao-marketplace/main/install.sh | bash
+```
+
+### PowerShell (Windows)
+
+```powershell
+irm https://raw.githubusercontent.com/aiconnai/mao-marketplace/main/install.ps1 | iex
+```
+
+### Claude Code Plugin
+
+```bash
 /plugin marketplace add aiconnai/mao-marketplace
-
-# 2. Install the plugin
 /plugin install multi-agent-orchestrator@mao-marketplace
 ```
 
-### Local Installation
+### Manual
 
 ```bash
-# Clone the repo
 git clone https://github.com/aiconnai/mao-marketplace.git
-
-# Add as local marketplace
-/plugin marketplace add ./mao-marketplace
-
-# Install
-/plugin install multi-agent-orchestrator@mao-marketplace
-```
-
-### Manual Installation (Copy Files)
-
-```bash
-# From your project root:
-mkdir -p .claude/agents .claude/skills
-
-# Copy agents
-cp -r /path/to/mao-marketplace/plugins/multi-agent-orchestrator/agents/*.md .claude/agents/
-
-# Copy skill
-cp -r /path/to/mao-marketplace/plugins/multi-agent-orchestrator/skills/multi-agent-orchestrator .claude/skills/
-
-# Add orchestrator state to .gitignore
+cp -r mao-marketplace/plugins/multi-agent-orchestrator/commands/*.md ~/.claude/commands/
+cp -r mao-marketplace/plugins/multi-agent-orchestrator/agents/*.md ~/.claude/agents/
 echo ".orchestrator/" >> .gitignore
 ```
 
@@ -79,14 +84,6 @@ MAO provides three slash commands for Claude Code:
 | `/mao <task>` | Full orchestration — decompose, execute in parallel, verify, review, merge |
 | `/mao-plan <task>` | Decomposition only — create the task DAG without executing |
 | `/mao-status` | Check status of an in-progress or completed MAO run |
-
-**Install commands globally** (symlink to `~/.claude/commands/`):
-
-```bash
-ln -s /path/to/mao-marketplace/plugins/multi-agent-orchestrator/commands/mao.md ~/.claude/commands/mao.md
-ln -s /path/to/mao-marketplace/plugins/multi-agent-orchestrator/commands/mao-plan.md ~/.claude/commands/mao-plan.md
-ln -s /path/to/mao-marketplace/plugins/multi-agent-orchestrator/commands/mao-status.md ~/.claude/commands/mao-status.md
-```
 
 **Examples:**
 
@@ -275,44 +272,32 @@ vs. all-Opus baseline: **~60-70% savings**
 ## Project Structure
 
 ```
-mao-marketplace/                          # Marketplace (distribution layer)
-├── .claude-plugin/marketplace.json       # Registry: lists available plugins
-├── README.md                             # This file
-├── .gitignore
+mao-marketplace/
+├── .github/workflows/              # CI/CD
+│   ├── ci.yml                      # Lint, validate JSON, check structure
+│   ├── release.yml                 # Publish npm + attach tar.gz
+│   └── docs.yml                    # Deploy landing page
+├── docs/site/                      # Landing page (GitHub Pages)
+├── npm/                            # npm installer CLI
+│   ├── package.json                # mao-orchestrator package
+│   └── index.mjs                   # Installer: init, status, uninstall, validate
+├── install.sh                      # Bash installer (curl | bash)
+├── install.ps1                     # PowerShell installer (irm | iex)
+├── action.yml                      # GitHub Action for task-graph validation
+├── CHANGELOG.md
+├── CONTRIBUTING.md
+├── LICENSE
 │
 └── plugins/
-    └── multi-agent-orchestrator/         # Plugin (installable unit)
-        ├── .claude-plugin/plugin.json    # Plugin manifest
-        ├── README.md                     # Plugin-specific docs
-        ├── agents/                       # 8 agent definitions
-        │   ├── mao-architect.md
-        │   ├── mao-orchestrator.md
-        │   ├── mao-implementer.md
-        │   ├── mao-worker.md
-        │   ├── mao-verifier.md
-        │   ├── mao-reviewer.md
-        │   ├── mao-reflector.md
-        │   └── mao-explorer.md
-        ├── commands/                    # Claude Code slash commands
-        │   ├── mao.md                   # /mao — full orchestration
-        │   ├── mao-plan.md              # /mao-plan — decomposition only
-        │   └── mao-status.md            # /mao-status — run status
-        │
+    └── multi-agent-orchestrator/   # Plugin (installable unit)
+        ├── agents/                 # 8 agent definitions
+        ├── commands/               # 3 Claude Code slash commands
         └── skills/
-            └── multi-agent-orchestrator/ # Skill (what Claude Code loads)
-                ├── SKILL.md              # Core skill definition
-                ├── references/           # Deep-dive docs (lazy-loaded)
-                │   ├── task-decomposition.md
-                │   ├── dag-scheduler.md
-                │   ├── model-routing.md
-                │   ├── self-correction.md
-                │   └── worktree-ops.md
-                ├── scripts/
-                │   ├── setup-worktrees.sh
-                │   └── merge-worktrees.sh
-                └── templates/
-                    ├── task-graph-template.json
-                    └── CLAUDE-md-snippet.md
+            └── multi-agent-orchestrator/
+                ├── SKILL.md        # Core skill definition
+                ├── references/     # Deep-dive docs (lazy-loaded)
+                ├── scripts/        # Worktree setup/merge scripts
+                └── templates/      # Task graph template, CLAUDE.md snippet
 ```
 
 ---
@@ -330,12 +315,38 @@ A template is provided at `templates/CLAUDE-md-snippet.md`. Key sections:
 
 ---
 
+## CI Integration
+
+Validate task-graph.json files in your CI pipeline:
+
+```yaml
+# .github/workflows/validate-mao.yml
+- uses: aiconnai/mao-marketplace@v1
+  with:
+    task-graph: .orchestrator/state/task-graph.json
+```
+
+Or use the CLI:
+
+```bash
+npx mao-orchestrator validate .orchestrator/state/task-graph.json
+```
+
+---
+
 ## Requirements
 
-- Claude Code v1.0.33+ (for plugin support)
+- Claude Code (MAO uses Claude-exclusive features)
 - Git (for worktree operations)
 - A project with tests/lint configured (for the verification pipeline)
 
+## Links
+
+- [Landing Page](https://aiconnai.github.io/mao-marketplace/)
+- [Usage Guide](USAGE.md)
+- [Contributing](CONTRIBUTING.md)
+- [Changelog](CHANGELOG.md)
+
 ## License
 
-MIT
+[MIT](LICENSE)
