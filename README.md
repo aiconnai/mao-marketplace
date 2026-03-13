@@ -1,3 +1,11 @@
+> **⚠️ This repository has moved to [limaronaldo/claude-toolkit](https://github.com/limaronaldo/claude-toolkit)**
+>
+> MAO Orchestrator is now part of the `claude-toolkit` monorepo at `packages/mao-orchestrator/`.
+> This repo is archived and will no longer receive updates.
+> All new issues and PRs should be filed at the new repository.
+
+---
+
 # MAO — Multi-Agent Orchestrator for Claude Code
 
 [![CI](https://github.com/aiconnai/mao-marketplace/actions/workflows/ci.yml/badge.svg)](https://github.com/aiconnai/mao-marketplace/actions/workflows/ci.yml)
